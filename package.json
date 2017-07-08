@@ -1,6 +1,6 @@
 {
   "name": "gartal",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Read bytes, ints, strings and more from streams as promises",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
