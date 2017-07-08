@@ -154,6 +154,18 @@ export function readIntBE(stream: NodeJS.ReadableStream, byteLength: number): Pr
     });
 }
 
+export function readInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
+    return readBytes(stream, 8).then(function (buf) {
+        return buf.readIntBE(0, 8);
+    });
+}
+
+export function readInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
+    return readBytes(stream, 8).then(function (buf) {
+        return buf.readIntLE(0, 8);
+    });
+}
+
 export function readIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
     return readBytes(stream, byteLength).then(function (buf) {
         return buf.readIntLE(0, byteLength);

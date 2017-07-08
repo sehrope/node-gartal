@@ -57,8 +57,15 @@ function createFloatLE(val) {
     return buf;
 }
 
-const INT32BE_ONE_MILLION = createIntBE(1000 * 1000, 4);
-const INT32LE_ONE_MILLION = createIntLE(1000 * 1000, 4);
+const ONE_TRILLION = 1000 * 1000 * 1000 * 1000;
+const NEGATIVE_ONE_TRILLION = -1 * 1000 * 1000 * 1000 * 1000;
+const ONE_MILLION = 1000 * 1000;
+const INT64BE_ONE_TRILLION = createIntBE(ONE_TRILLION, 8);
+const INT64LE_ONE_TRILLION = createIntLE(ONE_TRILLION, 8);
+const INT64BE_NEGATIVE_ONE_TRILLION = createIntBE(NEGATIVE_ONE_TRILLION, 8);
+const INT64LE_NEGATIVE_ONE_TRILLION = createIntLE(NEGATIVE_ONE_TRILLION, 8);
+const INT32BE_ONE_MILLION = createIntBE(ONE_MILLION, 4);
+const INT32LE_ONE_MILLION = createIntLE(ONE_MILLION, 4);
 const INT16BE_12345 = createIntBE(12345, 2);
 const INT16LE_12345 = createIntLE(12345, 2);
 const INT8_N123 = createInt8(-123);
@@ -166,16 +173,41 @@ describe('gartal', function () {
         const epsilon = .001;
         assert(Math.abs(actual - SAMPLE_FLOAT) < epsilon);
     });
+
+    it('should read 64-bit big endian integers', async function () {
+        const stream = createStream(INT64BE_ONE_TRILLION);
+        const actual = await gartal.readInt64BE(stream);
+        actual.should.equal(ONE_TRILLION);
+    });
+
+    it('should read 64-bit little endian integers', async function () {
+        const stream = createStream(INT64LE_ONE_TRILLION);
+        const actual = await gartal.readInt64LE(stream);
+        actual.should.equal(ONE_TRILLION);
+    });
+
+    it('should read 64-bit big endian negative integers', async function () {
+        const stream = createStream(INT64BE_NEGATIVE_ONE_TRILLION);
+        const actual = await gartal.readInt64BE(stream);
+        actual.should.equal(NEGATIVE_ONE_TRILLION);
+    });
+
+    it('should read 64-bit little endian negative integers', async function () {
+        const stream = createStream(INT64LE_NEGATIVE_ONE_TRILLION);
+        const actual = await gartal.readInt64LE(stream);
+        actual.should.equal(NEGATIVE_ONE_TRILLION);
+    });
+
     it('should read 32-bit big endian integers', async function () {
         const stream = createStream(INT32BE_ONE_MILLION);
         const actual = await gartal.readInt32BE(stream);
-        actual.should.equal(1000 * 1000);
+        actual.should.equal(ONE_MILLION);
     });
 
     it('should read 32-bit little endian integers', async function () {
         const stream = createStream(INT32LE_ONE_MILLION);
         const actual = await gartal.readInt32LE(stream);
-        actual.should.equal(1000 * 1000);
+        actual.should.equal(ONE_MILLION);
     });
 
     it('should read 16-bit big endian integers', async function () {
