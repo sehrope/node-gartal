@@ -1,0 +1,34 @@
+{
+  "name": "gartal",
+  "version": "1.0.0",
+  "description": "Read bytes, ints, strings and more from streams as promises",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "tsc --project tsconfig.json --declaration",
+    "test": "mocha --reporter tap --require should"
+  },
+  "keywords": [
+    "stream",
+    "bytes",
+    "binary",
+    "read",
+    "async",
+    "await"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sehrope/node-gartal.git"
+  },
+  "author": {
+    "name": "Sehrope Sarkuni",
+    "email": "sehrope@jackdb.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^8",
+    "mocha": "*",
+    "should": "*",
+    "stream-buffers": "^3",
+    "typescript": "^2.4.1"
+  }
+}
