@@ -27,7 +27,7 @@ Combined with async/await, this makes it very easy to interact with binary proto
     // Read 10 bytes
     const buf = await gartal.readBytes(stream, 10);
 
-    // Read a 32-bit big endiant integer
+    // Read a 32-bit big endian integer
     const num = await gartal.readInt32BE(stream);
 
     // Read a fixed length string
