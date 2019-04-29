@@ -173,6 +173,12 @@ export async function readUInt32LE(stream: NodeJS.ReadableStream): Promise<numbe
     return buf.readUInt32LE(0);
 }
 
+/**
+ * Read an unsigned 48-bit value as a 64-bit big-endian value from a stream and return
+ * it as a Number.
+ *
+ * If the first two bytes are non-zero then an error is thrown.
+ */
 export async function readUInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
     const buf = await readBytes(stream, 8);
     if (buf[0] !== 0 || buf[1] !== 0) {
@@ -182,6 +188,12 @@ export async function readUInt64BE(stream: NodeJS.ReadableStream): Promise<numbe
     return buf.readUIntBE(2, 6);
 }
 
+/**
+ * Read an unsigned 48-bit value as a 64-bit little-endian value from a stream and return
+ * it as a Number.
+ *
+ * If the last two bytes are non-zero then an error is thrown.
+ */
 export async function readUInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
     const buf = await readBytes(stream, 8);
     if (buf[6] !== 0 || buf[7] !== 0) {
