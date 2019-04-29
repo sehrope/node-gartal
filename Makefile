@@ -13,6 +13,9 @@ compile:
 test:
 	npm test
 
+lint:
+	npm lint
+
 package: clean deps compile
 
 publish: package test

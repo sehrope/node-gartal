@@ -1,14 +1,14 @@
 /**
  * Read some bytes from a stream.
- * 
+ *
  * @param stream the stream to read from
  * @param size the length in bytes to read
  */
 export function readBytes(stream: NodeJS.ReadableStream, size: number): Promise<Buffer> {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         stream.on('error', reject);
         function checkDone() {
-            const buf: Buffer = <any>stream.read(size);
+            const buf: Buffer = (stream as any).read(size);
             if (buf) {
                 stream.removeListener('error', reject);
                 if (buf.length !== size) {
@@ -25,7 +25,7 @@ export function readBytes(stream: NodeJS.ReadableStream, size: number): Promise<
 
 /**
  * Reads a fixed length string from a stream.
-
+ *
  * @param stream the stream to read from
  * @param size the length in bytes of the string
  * @param encoding the encoding of the string, defaults to 'utf8'
@@ -46,7 +46,7 @@ export interface ReadTextUuidOpts {
 
 /**
  * Reads a UUID serialized as text from a stream.
- * 
+ *
  * By default, this function assumes the UUID is seralized in it's string form: xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
  *
  * @param stream the stream to read from
@@ -54,23 +54,22 @@ export interface ReadTextUuidOpts {
  * @param size the size in bytes of the text UUID. Defaults to 36.
  * @param encoding the encoding of the string, defaults to 'utf8'
  */
-export async function readTextUuid(stream: NodeJS.ReadableStream,
-    { validator = UUID_STRING_PATTERN,
-        size = UUID_STRING_LENGTH,
-        encoding = 'utf8' }: ReadTextUuidOpts = {}): Promise<string> {
+export async function readTextUuid(stream: NodeJS.ReadableStream, {
+    validator = UUID_STRING_PATTERN,
+    size = UUID_STRING_LENGTH,
+    encoding = 'utf8',
+}: ReadTextUuidOpts = {}): Promise<string> {
     const text = await readText(stream, size, encoding);
     if (validator) {
         if (validator instanceof RegExp) {
             if (!validator.test(text)) {
                 throw new Error('UUID failed validation: ' + text);
             }
-        }
-        else if (validator instanceof Function) {
+        } else if (validator instanceof Function) {
             if (!validator(text)) {
                 throw new Error('UUID failed validation: ' + text);
             }
-        }
-        else {
+        } else {
             throw new Error('UUID validator is of invalid type: ' + validator);
         }
     }
@@ -79,7 +78,7 @@ export async function readTextUuid(stream: NodeJS.ReadableStream,
 
 /**
  * Reads a UUID serialized as 16-bytes from a stream.
- * 
+ *
  * @param stream the stream to read from
  */
 export async function readBinaryUuid(stream: NodeJS.ReadableStream): Promise<string> {
