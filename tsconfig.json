@@ -4,6 +4,12 @@
         "target": "es2017",
         "module": "commonjs",
         "noEmitHelpers": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "preserveConstEnums": true,
+        "skipLibCheck": true,
         "types": [
             "node"
         ]
