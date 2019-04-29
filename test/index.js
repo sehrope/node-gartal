@@ -9,15 +9,43 @@ function createStream(buf) {
     return stream;
 }
 
+const MAX_FORTY_EIGHT_BIT_UINT = Math.pow(2, 48) - 1;
+
 function createIntLE(val, size) {
+    if (Math.abs(val) > MAX_FORTY_EIGHT_BIT_UINT) {
+        throw new Error('Value out of range: ' + val);
+    } else if (size < 1 || size > 6) {
+        throw new Error('Invalid size: ' + size);
+    }
     const buf = new Buffer(size);
     buf.writeIntLE(val, 0, size);
     return buf;
 }
 
 function createIntBE(val, size) {
+    if (Math.abs(val) > MAX_FORTY_EIGHT_BIT_UINT) {
+        throw new Error('Value out of range: ' + val);
+    } else if (size < 1 || size > 6) {
+        throw new Error('Invalid size: ' + size);
+    }
     const buf = new Buffer(size);
     buf.writeIntBE(val, 0, size);
+    return buf;
+}
+
+function createUInt64BE(val) {
+    const buf = Buffer.alloc(8);
+    buf[0] = 0;
+    buf[1] = 0;
+    buf.writeUIntBE(val, 2, 6);
+    return buf;
+}
+
+function createUInt64LE(val) {
+    const buf = Buffer.alloc(8);
+    buf.writeUIntLE(val, 0, 6);
+    buf[6] = 0;
+    buf[7] = 0;
     return buf;
 }
 
@@ -58,12 +86,11 @@ function createFloatLE(val) {
 }
 
 const ONE_TRILLION = 1000 * 1000 * 1000 * 1000;
-const NEGATIVE_ONE_TRILLION = -1 * 1000 * 1000 * 1000 * 1000;
 const ONE_MILLION = 1000 * 1000;
-const INT64BE_ONE_TRILLION = createIntBE(ONE_TRILLION, 8);
-const INT64LE_ONE_TRILLION = createIntLE(ONE_TRILLION, 8);
-const INT64BE_NEGATIVE_ONE_TRILLION = createIntBE(NEGATIVE_ONE_TRILLION, 8);
-const INT64LE_NEGATIVE_ONE_TRILLION = createIntLE(NEGATIVE_ONE_TRILLION, 8);
+const UINT64BE_ONE_TRILLION = createUInt64BE(ONE_TRILLION);
+const UINT64LE_ONE_TRILLION = createUInt64LE(ONE_TRILLION);
+const UINT64BE_MAX_FORTY_EIGHT_BITS = createUInt64BE(MAX_FORTY_EIGHT_BIT_UINT);
+const UINT64LE_MAX_FORTY_EIGHT_BITS = createUInt64LE(MAX_FORTY_EIGHT_BIT_UINT);
 const INT32BE_ONE_MILLION = createIntBE(ONE_MILLION, 4);
 const INT32LE_ONE_MILLION = createIntLE(ONE_MILLION, 4);
 const INT16BE_12345 = createIntBE(12345, 2);
@@ -174,28 +201,28 @@ describe('gartal', function () {
         assert(Math.abs(actual - SAMPLE_FLOAT) < epsilon);
     });
 
-    it('should read 64-bit big endian integers', async function () {
-        const stream = createStream(INT64BE_ONE_TRILLION);
-        const actual = await gartal.readInt64BE(stream);
+    it('should read unsigned 64-bit big endian integers', async function () {
+        const stream = createStream(UINT64BE_ONE_TRILLION);
+        const actual = await gartal.readUInt64BE(stream);
         actual.should.equal(ONE_TRILLION);
     });
 
-    it('should read 64-bit little endian integers', async function () {
-        const stream = createStream(INT64LE_ONE_TRILLION);
-        const actual = await gartal.readInt64LE(stream);
+    it('should read unsigned 64-bit little endian integers', async function () {
+        const stream = createStream(UINT64LE_ONE_TRILLION);
+        const actual = await gartal.readUInt64LE(stream);
         actual.should.equal(ONE_TRILLION);
     });
 
-    it('should read 64-bit big endian negative integers', async function () {
-        const stream = createStream(INT64BE_NEGATIVE_ONE_TRILLION);
-        const actual = await gartal.readInt64BE(stream);
-        actual.should.equal(NEGATIVE_ONE_TRILLION);
+    it('should read really big 64-bit big endian integers', async function () {
+        const stream = createStream(UINT64BE_MAX_FORTY_EIGHT_BITS);
+        const actual = await gartal.readUInt64BE(stream);
+        actual.should.equal(MAX_FORTY_EIGHT_BIT_UINT);
     });
 
-    it('should read 64-bit little endian negative integers', async function () {
-        const stream = createStream(INT64LE_NEGATIVE_ONE_TRILLION);
-        const actual = await gartal.readInt64LE(stream);
-        actual.should.equal(NEGATIVE_ONE_TRILLION);
+    it('should read unsigned 64-bit little endian integers', async function () {
+        const stream = createStream(UINT64LE_MAX_FORTY_EIGHT_BITS);
+        const actual = await gartal.readUInt64LE(stream);
+        actual.should.equal(MAX_FORTY_EIGHT_BIT_UINT);
     });
 
     it('should read 32-bit big endian integers', async function () {

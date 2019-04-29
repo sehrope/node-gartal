@@ -143,16 +143,6 @@ export async function readIntBE(stream: NodeJS.ReadableStream, byteLength: numbe
     return buf.readIntBE(0, byteLength);
 }
 
-export async function readInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
-    const buf = await readBytes(stream, 8);
-    return buf.readIntBE(0, 8);
-}
-
-export async function readInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
-    const buf = await readBytes(stream, 8);
-    return buf.readIntLE(0, 8);
-}
-
 export async function readIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
     const buf = await readBytes(stream, byteLength);
     return buf.readIntLE(0, byteLength);
@@ -183,12 +173,42 @@ export async function readUInt32LE(stream: NodeJS.ReadableStream): Promise<numbe
     return buf.readUInt32LE(0);
 }
 
+export async function readUInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    if (buf[0] !== 0 || buf[1] !== 0) {
+        throw new Error('Value ouf range');
+    }
+    // 0x0000<value>
+    return buf.readUIntBE(2, 6);
+}
+
+export async function readUInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    if (buf[6] !== 0 || buf[7] !== 0) {
+        throw new Error('Value out of range');
+    }
+    // 0x<value>0000
+    return buf.readUIntLE(0, 6);
+}
+
 export async function readUIntBE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    switch (byteLength) {
+        case 8:
+            return readUInt64BE(stream);
+        case 7:
+            throw new Error('Invalid byteLength: ' + byteLength);
+    }
     const buf = await readBytes(stream, byteLength);
     return buf.readUIntBE(0, byteLength);
 }
 
 export async function readUIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    switch (byteLength) {
+        case 8:
+            return readUInt64LE(stream);
+        case 7:
+            throw new Error('Invalid byteLength: ' + byteLength);
+    }
     const buf = await readBytes(stream, byteLength);
     return buf.readUIntLE(0, byteLength);
 }
