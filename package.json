@@ -2,6 +2,9 @@
   "name": "gartal",
   "version": "1.1.2",
   "description": "Read bytes, ints, strings and more from streams as promises",
+  "engines": {
+    "node": ">=8"
+  },
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
