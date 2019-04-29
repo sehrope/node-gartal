@@ -1,6 +1,6 @@
 {
   "name": "gartal",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "description": "Read bytes, ints, strings and more from streams as promises",
   "engines": {
     "node": ">=8"
