@@ -30,10 +30,9 @@ export function readBytes(stream: NodeJS.ReadableStream, size: number): Promise<
  * @param size the length in bytes of the string
  * @param encoding the encoding of the string, defaults to 'utf8'
  */
-export function readText(stream: NodeJS.ReadableStream, size: number, encoding: string = 'utf8'): Promise<string> {
-    return readBytes(stream, size).then(function (buf) {
-        return buf.toString(encoding);
-    });
+export async function readText(stream: NodeJS.ReadableStream, size: number, encoding: string = 'utf8'): Promise<string> {
+    const buf = await readBytes(stream, size);
+    return buf.toString(encoding);
 }
 
 const UUID_STRING_LENGTH = 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx'.length;
@@ -55,26 +54,27 @@ export interface ReadTextUuidOpts {
  * @param size the size in bytes of the text UUID. Defaults to 36.
  * @param encoding the encoding of the string, defaults to 'utf8'
  */
-export function readTextUuid(stream: NodeJS.ReadableStream,
+export async function readTextUuid(stream: NodeJS.ReadableStream,
     { validator = UUID_STRING_PATTERN,
         size = UUID_STRING_LENGTH,
         encoding = 'utf8' }: ReadTextUuidOpts = {}): Promise<string> {
-    return readText(stream, size, encoding).then(function (text) {
-        if (validator) {
-            if (validator instanceof RegExp) {
-                if (!validator.test(text)) {
-                    throw new Error('UUID failed validation: ' + text);
-                }
-            } else if (validator instanceof Function) {
-                if (!validator(text)) {
-                    throw new Error('UUID failed validation: ' + text);
-                }
-            } else {
-                throw new Error('UUID validator is of invalid type: ' + validator);
+    const text = await readText(stream, size, encoding);
+    if (validator) {
+        if (validator instanceof RegExp) {
+            if (!validator.test(text)) {
+                throw new Error('UUID failed validation: ' + text);
             }
         }
-        return text;
-    });
+        else if (validator instanceof Function) {
+            if (!validator(text)) {
+                throw new Error('UUID failed validation: ' + text);
+            }
+        }
+        else {
+            throw new Error('UUID validator is of invalid type: ' + validator);
+        }
+    }
+    return text;
 }
 
 /**
@@ -82,134 +82,113 @@ export function readTextUuid(stream: NodeJS.ReadableStream,
  * 
  * @param stream the stream to read from
  */
-export function readBinaryUuid(stream: NodeJS.ReadableStream): Promise<string> {
-    return readBytes(stream, 16).then(function (buf) {
-        return [
-            buf.slice(0, 4).toString('hex'),
-            buf.slice(4, 6).toString('hex'),
-            buf.slice(6, 8).toString('hex'),
-            buf.slice(8, 10).toString('hex'),
-            buf.slice(10, 16).toString('hex'),
-        ].join('-');
-    });
+export async function readBinaryUuid(stream: NodeJS.ReadableStream): Promise<string> {
+    const buf = await readBytes(stream, 16);
+    return [
+        buf.slice(0, 4).toString('hex'),
+        buf.slice(4, 6).toString('hex'),
+        buf.slice(6, 8).toString('hex'),
+        buf.slice(8, 10).toString('hex'),
+        buf.slice(10, 16).toString('hex'),
+    ].join('-');
 }
 
-export function readDoubleBE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 8).then(function (buf) {
-        return buf.readDoubleBE(0);
-    });
+export async function readDoubleBE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    return buf.readDoubleBE(0);
 }
 
-export function readDoubleLE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 8).then(function (buf) {
-        return buf.readDoubleLE(0);
-    });
+export async function readDoubleLE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    return buf.readDoubleLE(0);
 }
 
-export function readFloatBE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readFloatBE(0);
-    });
+export async function readFloatBE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readFloatBE(0);
 }
 
-export function readFloatLE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readFloatLE(0);
-    });
+export async function readFloatLE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readFloatLE(0);
 }
 
-export function readInt8(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 1).then(function (buf) {
-        return buf.readInt8(0);
-    });
+export async function readInt8(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 1);
+    return buf.readInt8(0);
 }
 
-export function readInt16BE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 2).then(function (buf) {
-        return buf.readInt16BE(0);
-    });
+export async function readInt16BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 2);
+    return buf.readInt16BE(0);
 }
 
-export function readInt16LE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 2).then(function (buf) {
-        return buf.readInt16LE(0);
-    });
+export async function readInt16LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 2);
+    return buf.readInt16LE(0);
 }
 
-export function readInt32BE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readInt32BE(0);
-    });
+export async function readInt32BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readInt32BE(0);
 }
 
-export function readInt32LE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readInt32LE(0);
-    });
+export async function readInt32LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readInt32LE(0);
 }
 
-export function readIntBE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
-    return readBytes(stream, byteLength).then(function (buf) {
-        return buf.readIntBE(0, byteLength);
-    });
+export async function readIntBE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    const buf = await readBytes(stream, byteLength);
+    return buf.readIntBE(0, byteLength);
 }
 
-export function readInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 8).then(function (buf) {
-        return buf.readIntBE(0, 8);
-    });
+export async function readInt64BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    return buf.readIntBE(0, 8);
 }
 
-export function readInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 8).then(function (buf) {
-        return buf.readIntLE(0, 8);
-    });
+export async function readInt64LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 8);
+    return buf.readIntLE(0, 8);
 }
 
-export function readIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
-    return readBytes(stream, byteLength).then(function (buf) {
-        return buf.readIntLE(0, byteLength);
-    });
+export async function readIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    const buf = await readBytes(stream, byteLength);
+    return buf.readIntLE(0, byteLength);
 }
 
-export function readUInt8(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 1).then(function (buf) {
-        return buf.readUInt8(0);
-    });
+export async function readUInt8(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 1);
+    return buf.readUInt8(0);
 }
 
-export function readUInt16BE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 2).then(function (buf) {
-        return buf.readUInt16BE(0);
-    });
+export async function readUInt16BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 2);
+    return buf.readUInt16BE(0);
 }
 
-export function readUInt16LE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 2).then(function (buf) {
-        return buf.readUInt16LE(0);
-    });
+export async function readUInt16LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 2);
+    return buf.readUInt16LE(0);
 }
 
-export function readUInt32BE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readUInt32BE(0);
-    });
+export async function readUInt32BE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readUInt32BE(0);
 }
 
-export function readUInt32LE(stream: NodeJS.ReadableStream): Promise<number> {
-    return readBytes(stream, 4).then(function (buf) {
-        return buf.readUInt32LE(0);
-    });
+export async function readUInt32LE(stream: NodeJS.ReadableStream): Promise<number> {
+    const buf = await readBytes(stream, 4);
+    return buf.readUInt32LE(0);
 }
 
-export function readUIntBE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
-    return readBytes(stream, byteLength).then(function (buf) {
-        return buf.readUIntBE(0, byteLength);
-    });
+export async function readUIntBE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    const buf = await readBytes(stream, byteLength);
+    return buf.readUIntBE(0, byteLength);
 }
 
-export function readUIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
-    return readBytes(stream, byteLength).then(function (buf) {
-        return buf.readUIntLE(0, byteLength);
-    });
+export async function readUIntLE(stream: NodeJS.ReadableStream, byteLength: number): Promise<number> {
+    const buf = await readBytes(stream, byteLength);
+    return buf.readUIntLE(0, byteLength);
 }
