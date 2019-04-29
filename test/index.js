@@ -17,7 +17,7 @@ function createIntLE(val, size) {
     } else if (size < 1 || size > 6) {
         throw new Error('Invalid size: ' + size);
     }
-    const buf = new Buffer(size);
+    const buf = Buffer.alloc(size);
     buf.writeIntLE(val, 0, size);
     return buf;
 }
@@ -28,7 +28,7 @@ function createIntBE(val, size) {
     } else if (size < 1 || size > 6) {
         throw new Error('Invalid size: ' + size);
     }
-    const buf = new Buffer(size);
+    const buf = Buffer.alloc(size);
     buf.writeIntBE(val, 0, size);
     return buf;
 }
@@ -50,37 +50,37 @@ function createUInt64LE(val) {
 }
 
 function createInt8(val) {
-    const buf = new Buffer(1);
+    const buf = Buffer.alloc(1);
     buf.writeInt8(val, 0);
     return buf;
 }
 
 function createUInt8(val) {
-    const buf = new Buffer(1);
+    const buf = Buffer.alloc(1);
     buf.writeUInt8(val, 0);
     return buf;
 }
 
 function createDoubleBE(val) {
-    const buf = new Buffer(8);
+    const buf = Buffer.alloc(8);
     buf.writeDoubleBE(val, 0);
     return buf;
 }
 
 function createDoubleLE(val) {
-    const buf = new Buffer(8);
+    const buf = Buffer.alloc(8);
     buf.writeDoubleLE(val, 0);
     return buf;
 }
 
 function createFloatBE(val) {
-    const buf = new Buffer(4);
+    const buf = Buffer.alloc(4);
     buf.writeFloatBE(val, 0);
     return buf;
 }
 
 function createFloatLE(val) {
-    const buf = new Buffer(4);
+    const buf = Buffer.alloc(4);
     buf.writeFloatLE(val, 0);
     return buf;
 }
@@ -107,9 +107,9 @@ const SAMPLE_FLOAT_BE = createFloatBE(SAMPLE_DOUBLE);
 const SAMPLE_FLOAT_LE = createFloatLE(SAMPLE_DOUBLE);
 
 const TESTING_123 = 'TESTING 1 2 3';
-const TESTING_123_BYTES = new Buffer(TESTING_123);
+const TESTING_123_BYTES = Buffer.from(TESTING_123, 'utf8');
 const UUID = '4bfabc01-d385-46fe-b010-8eb17cf657e7';
-const UUID_AS_TEXT_BYTES = new Buffer(UUID);
+const UUID_AS_TEXT_BYTES = Buffer.from(UUID, 'utf8');
 
 describe('gartal.readBytes', function () {
     it('should read bytes', async function () {
@@ -148,7 +148,7 @@ describe('gartal.readText', function () {
 describe('gartal.readTextUuid', function () {
     it('should read text UUIDs', async function () {
         const notUuidText = 'this is a test of some text that is clearly not a UUID';
-        const stream = createStream(new Buffer(notUuidText));
+        const stream = createStream(Buffer.from(notUuidText, 'utf8'));
         try {
             const actual = await gartal.readTextUuid(stream);
             assert(false);
@@ -166,7 +166,7 @@ describe('gartal.readTextUuid', function () {
 
 describe('gartal.readBinaryUuid', function () {
     it('should read binary UUIDs', async function () {
-        const uuidAsBytes = new Buffer(UUID.replace(/\-/g, ''), 'hex');
+        const uuidAsBytes = Buffer.from(UUID.replace(/\-/g, ''), 'hex');
         assert(uuidAsBytes.length === 16);
         const stream = createStream(uuidAsBytes);
         const actual = await gartal.readBinaryUuid(stream);
@@ -262,7 +262,7 @@ describe('gartal', function () {
     });
 
     it('should read only the bytes we asked for', async function () {
-        const data = new Buffer(100);
+        const data = Buffer.alloc(100);
         for (let i = 0; i < data.length; i++) {
             data[i] = i;
         }
