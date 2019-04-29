@@ -11,3 +11,5 @@ script:
 node_js:
   - "node"
   - "8"
+  - "10"
+  - "12"
