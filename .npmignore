@@ -1,6 +1,8 @@
 .npmignore
 .travis.yml
 Makefile
+scratch
 src
 test
 tsconfig.json
+tslint.json
